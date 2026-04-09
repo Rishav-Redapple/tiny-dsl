@@ -15,7 +15,7 @@ export function defineCommand(command: Command) {
 
 export function parseCommand<T>(name: string, sv: StringView): Promise<T> | T {
   const cmd = commands.get(name);
-  if (!cmd) throw new Error("unknown command");
+  if (!cmd) throw new Error(`unknown function "${name}"`);
 
   sv.trim();
   const fnName = sv.consumeUntil(ch => !isAlpha(ch));

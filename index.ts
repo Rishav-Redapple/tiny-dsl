@@ -4,7 +4,7 @@ import StringView from "./string-view"
 defineCommand({
   name: "add",
   args: ["int", "int"],
-  exec: ([a, b]): number => a + b
+  exec: ([a]): number => a + a
 });
 
 defineCommand({
@@ -38,7 +38,7 @@ defineCommand({
   }
 });
 
-console.log(parseCommand("add", new StringView("add(1,2)")))
+console.log(parseCommand("add", new StringView("add(12, 2)")))
 
-console.log(await parseCommand("weather", new StringView("weather(kolkata)")))
+// console.log(await parseCommand("weather", new StringView("weather(kolkata)")))
 
