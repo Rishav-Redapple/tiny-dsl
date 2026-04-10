@@ -34,6 +34,18 @@ class StringView {
     this.sv.len = this.sv.data.length;
   }
 
+  mark(): [start: number, len: number] {
+    return [this.sv.start, this.sv.len];
+  }
+
+  goto([start, len]: [start: number, len: number]) {
+    const totalLen = this.sv.data.length - 1;
+    if (start < 0 || start > totalLen || len < 0 || len > totalLen)
+      throw new Error(`start ${start} and len ${len} are out of range`);
+    this.sv.start = start;
+    this.sv.len = len;
+  }
+
   head(): string {
     if (this.isEmpty()) return "";
     return this.sv.data[this.sv.start]!;

@@ -1,16 +1,20 @@
-import { defineCommand, parseCommand } from "./dsl";
-import StringView from "./string-view"
+import TinyDsl from "./tiny-dsl";
 
-defineCommand({
+const dsl = new TinyDsl();
+
+dsl.defineCommand({
   name: "add",
   args: ["int", "int"],
-  exec: ([a]): number => a + a
+  exec: ([a, b]): number => a + b
 });
 
-defineCommand({
+dsl.defineCommand({
   name: "weather",
   args: ["str"],
-  exec: async ([city]) => {
+  exec: async function* ([city]) {
+
+    yield "getting coordinates...";
+
     const geoRes = await fetch(
       `https://geocoding-api.open-meteo.com/v1/search?name=${city}`
     );
@@ -22,6 +26,8 @@ defineCommand({
     if (!result) throw new Error("city not found");
 
     const { latitude: lat, longitude: lon } = result;
+
+    yield "fetching weather...";
 
     const weatherRes = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
@@ -38,7 +44,14 @@ defineCommand({
   }
 });
 
-console.log(parseCommand("add", new StringView("add(12, 2)")))
+console.log(dsl.parse("add", "add(1,2)"));
 
-// console.log(await parseCommand("weather", new StringView("weather(kolkata)")))
+const data = dsl.parseAsync("weather", "weather(kolkata)");
+
+while (true) {
+  const it = await data.next();
+  console.log(it.value);
+  if (it.done) break;
+}
+
 
