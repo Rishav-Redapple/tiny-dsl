@@ -44,14 +44,7 @@ dsl.defineCommand({
   }
 });
 
-console.log(dsl.parse("add", "add(1,2)"));
-
-const data = dsl.parseAsync("weather", "weather(kolkata)");
-
-while (true) {
-  const it = await data.next();
-  console.log(it.value);
-  if (it.done) break;
-}
-
-
+await dsl.stream<string>(
+  dsl.parseAsync<string>("weather", "weather(kolkata)"),
+  console.log,
+);

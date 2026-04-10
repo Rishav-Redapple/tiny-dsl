@@ -36,7 +36,7 @@ class TinyDsl {
     const args = this.argparse(sv, cmd);
     const out = this.execute(cmd, args);
 
-    if (out && Symbol.asyncIterator in out) {
+    if (typeof out == "object" && Symbol.asyncIterator in out) {
       const iter: AsyncIterator<any, T, any> = out[Symbol.asyncIterator]();
 
       while (true) {
@@ -47,6 +47,16 @@ class TinyDsl {
     }
 
     return Promise.resolve(out) as T;
+  }
+
+  async stream<T>(data: AsyncGenerator<any, T, any>, callback: (t: T) => void) {
+    if (!(Symbol.asyncIterator in data))
+      throw new Error("data is not streamable");
+    while (true) {
+      const { done, value } = await data.next();
+      callback(value);
+      if (done) break;
+    }
   }
 
   private fnLookup(sv: StringView): Command {

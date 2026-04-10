@@ -8,7 +8,7 @@ A small script to make functions
 // start with defining tge function
 defineCommand({ name: string, args: ["int", "int"], exec: ([a, b]) => a+b })
 // then parse & execute the command
-parseCommand(name: string, StringView)
+parse(name: string, data: string)
 ```
 
 ### defineCommand
@@ -19,7 +19,38 @@ This is the function you use to create the function.
 
 name (string) = The name of your function.
 args (argType[]) where argType is "int" | "str" = Arguments your function will have and its type.
-exec (Function | Async Function) = This is where you write the purpose of your function.
+exec (Function | Async Function | AsyncGenerator) = This is where you write the purpose of your function.
+
+### Streaming
+
+Now added support to execute async functions and stream data.
+
+```js
+// outline
+dsl.defineCommand({
+  name: "weather",
+  args: ["str"],
+  exec: async function *([city]) {
+    yield "getting coordinates..."
+    fetch(...)
+
+    yield "fetching weather..."
+    fetch(...)
+
+    return `Current weather in ${city} is ${temp}°C`
+  }
+});
+
+// await stream to output both yield and return value
+// last parameter is callback
+await dsl.stream(dsl.parse("weather", "weather(kolkata)"), console.log);
+```
+
+### Preview of weather(city)
+
+Full demo can be found in index.ts file.
+
+![preview](./preview.png)
 
 ---
 
