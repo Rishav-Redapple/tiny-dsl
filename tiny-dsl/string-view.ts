@@ -39,7 +39,7 @@ class StringView {
   }
 
   goto([start, len]: [start: number, len: number]) {
-    const totalLen = this.sv.data.length - 1;
+    const totalLen = this.sv.data.length;
     if (start < 0 || start > totalLen || len < 0 || len > totalLen)
       throw new Error(`start ${start} and len ${len} are out of range`);
     this.sv.start = start;

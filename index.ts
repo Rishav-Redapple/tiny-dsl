@@ -9,6 +9,12 @@ dsl.defineCommand({
 });
 
 dsl.defineCommand({
+  name: "sayMyName",
+  args: ["str"],
+  exec: ([name]) => name == "Heisenberg" ? "You're Goddamn Right!" : `Hello ${name}...`
+});
+
+dsl.defineCommand({
   name: "weather",
   args: ["str"],
   exec: async function* ([city]) {
@@ -23,7 +29,7 @@ dsl.defineCommand({
 
     const geoJson: any = await geoRes.json();
     const result = geoJson?.results?.[0];
-    if (!result) throw new Error("city not found");
+    if (!result) return `City ${city} not found`;
 
     const { latitude: lat, longitude: lon } = result;
 
@@ -38,13 +44,15 @@ dsl.defineCommand({
     const weatherJson: any = await weatherRes.json();
     const weather = weatherJson?.current_weather;
 
-    if (!weather) throw new Error("weather not found");
+    if (!weather) return `Sorry, can't get weather in ${city}`;
 
     return `Current weather in ${city} is ${weather.temperature}°C`;
   }
 });
 
+console.log(dsl.parse(`sayMyName("WW")`))
+console.log(dsl.parse("add(34, 35)"))
 await dsl.stream<string>(
-  dsl.parseAsync<string>("weather", "weather(kolkata)"),
+  dsl.parseAsync<string>(`weather("kolkata")`),
   console.log,
 );
